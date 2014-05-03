@@ -148,38 +148,13 @@ public class WarpsComponent extends LocationsComponent {
         @CommandPermissions({"commandbook.warp.info"})
         public void infoCmd(CommandContext args, CommandSender sender) throws CommandException {
             World world;
+            String warpName = args.getString(0);
             if (args.argsLength() == 2) {
                 world = InputUtil.LocationParser.matchWorld(sender, args.getString(1));
             } else {
                 world = PlayerUtil.checkPlayer(sender).getWorld();
             }
-            NamedLocation warp = getManager().get(world, args.getString(0));
-
-            // Resolve the world name
-            String worldN = warp.getWorldName();
-            if (worldN == null) {
-                worldN = CommandBook.server().getWorlds().get(0).getName();
-            }
-
-            // Resolve the quards
-            Location l = warp.getLocation();
-            int x = l.getBlockX();
-            int y = l.getBlockY();
-            int z = l.getBlockZ();
-
-            // Print the header
-            sender.sendMessage(ChatColor.GOLD + "Warp Information for: "
-                    + ChatColor.BLUE + warp.getName().toUpperCase());
-            // Print the owner details
-            sender.sendMessage(ChatColor.YELLOW + "Owner:");
-            sender.sendMessage(ChatColor.YELLOW + " - " + ChatColor.WHITE + warp.getCreatorName());
-            // Print the Location details
-            sender.sendMessage(ChatColor.YELLOW + "Location: ");
-            sender.sendMessage(ChatColor.YELLOW + " - World: " + ChatColor.WHITE + worldN);
-            sender.sendMessage(ChatColor.YELLOW + " - X: " + ChatColor.WHITE + x
-                    + ChatColor.YELLOW + ", Y: " + ChatColor.WHITE + y
-                    + ChatColor.YELLOW + ", Z: " + ChatColor.WHITE + z);
-
+            info(warpName, world, sender);
         }
 
         @Command(aliases = {"del", "delete", "remove", "rem"}, usage = "<warpname> [world]",
