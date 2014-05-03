@@ -141,6 +141,47 @@ public class WarpsComponent extends LocationsComponent {
     }
 
     public class ManagementCommands {
+
+        @Command(aliases = {"info", "inf"}, usage = "<warpname> [world]",
+                desc = "Get information about a warp", min = 1, max = 2
+        )
+        @CommandPermissions({"commandbook.warp.info"})
+        public void infoCmd(CommandContext args, CommandSender sender) throws CommandException {
+            World world;
+            if (args.argsLength() == 2) {
+                world = InputUtil.LocationParser.matchWorld(sender, args.getString(1));
+            } else {
+                world = PlayerUtil.checkPlayer(sender).getWorld();
+            }
+            NamedLocation warp = getManager().get(world, args.getString(0));
+
+            // Resolve the world name
+            String worldN = warp.getWorldName();
+            if (worldN == null) {
+                worldN = CommandBook.server().getWorlds().get(0).getName();
+            }
+
+            // Resolve the quards
+            Location l = warp.getLocation();
+            int x = l.getBlockX();
+            int y = l.getBlockY();
+            int z = l.getBlockZ();
+
+            // Print the header
+            sender.sendMessage(ChatColor.GOLD + "Warp Information for: "
+                    + ChatColor.BLUE + warp.getName().toUpperCase());
+            // Print the owner details
+            sender.sendMessage(ChatColor.YELLOW + "Owner:");
+            sender.sendMessage(ChatColor.YELLOW + " - " + ChatColor.WHITE + warp.getCreatorName());
+            // Print the Location details
+            sender.sendMessage(ChatColor.YELLOW + "Location: ");
+            sender.sendMessage(ChatColor.YELLOW + " - World: " + ChatColor.WHITE + worldN);
+            sender.sendMessage(ChatColor.YELLOW + " - X: " + ChatColor.WHITE + x
+                    + ChatColor.YELLOW + ", Y: " + ChatColor.WHITE + y
+                    + ChatColor.YELLOW + ", Z: " + ChatColor.WHITE + z);
+
+        }
+
         @Command(aliases = {"del", "delete", "remove", "rem"}, usage = "<warpname> [world]",
                 desc = "Remove a warp", min = 1, max = 2 )
         @CommandPermissions({"commandbook.warp.remove"})
@@ -167,14 +208,14 @@ public class WarpsComponent extends LocationsComponent {
     @Override
     public PaginatedResult<NamedLocation> getListResult() {
         final String defaultWorld = CommandBook.server().getWorlds().get(0).getName();
-        return new PaginatedResult<NamedLocation>("Name - Owner - World  - Location") {
+        return new PaginatedResult<NamedLocation>(ChatColor.GOLD + "Warps") {
             @Override
             public String format(NamedLocation entry) {
-                return entry.getName()
-                        + " - " + entry.getCreatorName()
-                        + " - " + (entry.getWorldName() == null ? defaultWorld : entry.getWorldName())
-                        + " - " + entry.getLocation().getBlockX() + "," + entry.getLocation().getBlockY()
-                        + "," + entry.getLocation().getBlockZ();
+                return ChatColor.BLUE + entry.getName().toUpperCase() + ChatColor.YELLOW
+                        + " (Owner: " + ChatColor.WHITE + entry.getCreatorName()
+                        + ChatColor.YELLOW + ", World: "
+                        + ChatColor.WHITE + (entry.getWorldName() == null ? defaultWorld : entry.getWorldName())
+                        + ChatColor.YELLOW + ")";
             }
         };
     }
