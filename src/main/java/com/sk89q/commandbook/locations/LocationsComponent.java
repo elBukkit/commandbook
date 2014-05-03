@@ -104,7 +104,7 @@ public abstract class LocationsComponent extends BukkitComponent {
         int z = l.getBlockZ();
 
         // Print the header
-        sender.sendMessage(ChatColor.GOLD + " Information for: "
+        sender.sendMessage(ChatColor.GOLD + this.name + " Information for: "
                 + ChatColor.BLUE + loc.getName().toUpperCase());
         // Print the owner details
         sender.sendMessage(ChatColor.YELLOW + "Owner:");
